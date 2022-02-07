@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 
 app.get('/download', (req, res) => {
-    const file = 'static/a.txt';
+    const file = `static/${req.query.name}.txt`;
     res.download(file);
 });
 
