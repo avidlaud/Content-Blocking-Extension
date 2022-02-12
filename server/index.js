@@ -1,10 +1,6 @@
-const express = require('express');
+const server = require('./server');
 
-const app = express();
+const PORT = 10000;
+const HOST = '0.0.0.0';
 
-app.get('/download', (req, res) => {
-    const file = `static/${req.query.name}.txt`;
-    res.download(file);
-});
-
-app.listen(10000, '0.0.0.0');
+server.listen(PORT, HOST, () => console.log(`Server started, running on port ${PORT}`));
