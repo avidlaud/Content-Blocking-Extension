@@ -1,0 +1,16 @@
+{
+    "name": "File Downloader",
+    "description": "Basic extension to download files from server",
+    "version": "0.1",
+    "manifest_version": 3,
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [ "<all_urls>" ],
+            "js": [ "content_script.js" ]
+        }
+    ],
+    "permissions": ["fileSystem"]
+}
