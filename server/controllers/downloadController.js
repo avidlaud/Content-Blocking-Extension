@@ -2,8 +2,6 @@ const fs = require('fs');
 const AWS = require('aws-sdk');
 
 if (process.env.NODE_ENV === 'development') {
-    console.log(process.env.ACCESS_KEY_ID);
-    console.log(process.env.SECRET_ACCESS_KEY);
     AWS.config.update(
         {
             accessKeyId: process.env.ACCESS_KEY_ID,
@@ -11,8 +9,6 @@ if (process.env.NODE_ENV === 'development') {
             region: 'us-east-1',
         },
     );
-} else {
-    // Implement with IAM roles on EC2
 }
 
 const s3 = new AWS.S3();
