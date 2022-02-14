@@ -7,7 +7,13 @@
   "author": "Group 20",
   "license": "UNLICENSED",
   "private": true,
+  "scripts": {
+    "dev": "NODE_ENV=development node index.js",
+    "prod": "NODE_ENV=production node index.js"
+  },
   "dependencies": {
+    "aws-sdk": "^2.1073.0",
+    "dotenv": "^16.0.0",
     "express": "^4.17.2"
   },
   "devDependencies": {
