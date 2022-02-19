@@ -1,0 +1,20 @@
+{
+  "name": "extension",
+  "version": "1.0.0",
+  "description": "Customizable to block specific content",
+  "repository": "https://github.com/avidlaud/Content-Blocking-Extension",
+  "author": "Group 20",
+  "license": "UNLICENSED",
+  "private": true,
+  "targets": {
+    "prod": {}
+  },
+  "scripts": {
+    "clean": "rm -rf dist .parcel-cache",
+    "copy": "mkdir dist && cp manifest.json dist/",
+    "build": "yarn run copy && parcel build src/*"
+  },
+  "dependencies": {
+    "parcel": "^2.3.2"
+  }
+}
