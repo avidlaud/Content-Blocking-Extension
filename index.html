@@ -3,36 +3,24 @@
 <head>
     <meta charset="utf-8">
     <title>MobileNet Prediction Demo</title>
+    <!-- Load the latest version of TensorFlow.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
 </head>
 <body>
+    <!--Link our predict.js-->
+    <script src="predict.js"></script>
     <!-- Load TensorFlow.js. This is required to use MobileNet. -->
+<!--
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
-<!-- Load the MobileNet model. -->
+<!-- Load the MobileNet model.
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
-
 <!--Upload image option to test with multiple images -->
-<form action="/action_page.php">
-  <label for="img">Select image:</label>
-  <input type="file" id="img" name="img" accept="image/*">
-  <input type="submit" id="predict-button">
-</form>
+
+<input type='file' onchange="uploadImg(this);" />
+<img id="img" src="#" alt="Upload Image" />
 <!-- Replace this with your image. Make sure CORS settings allow reading the image! -->
-<img id="img" src="img"></img>
-<!-- Place your code in the script tag below. You can also use an external .js file -->
-<script>
-// Notice there is no 'import' statement. 'mobilenet' and 'tf' is
-// available on the index-page because of the script tag above.
 
-const img = document.getElementById('img');
 
-// Load the model.
-mobilenet.load().then(model => {
-// Classify the image.
-model.classify(img).then(predictions => {
-  console.log('Predictions: ');
-  console.log(predictions);
-});
-});
-</script>
 </body>
 </html>
