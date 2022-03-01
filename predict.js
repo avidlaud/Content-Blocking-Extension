@@ -14,6 +14,7 @@ function uploadImg(input) {
 
            reader.onload = function (e) {
                var img = document.getElementById('img');
+               console.log('Loading Image');
                img.src = e.target.result;
                img.width = 224;
                img.heigh = 224;
