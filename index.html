@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-<head>
-    <meta charset="utf-8">
-    <title>MobileNet Prediction Demo</title>
-    <!-- Load the latest version of TensorFlow.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
-</head>
-<body>
-    <!--Link our predict.js-->
-    <script src="predict.js"></script>
-    <!-- Load TensorFlow.js. This is required to use MobileNet. -->
-<!--
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
-<!-- Load the MobileNet model.
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
-<!--Upload image option to test with multiple images -->
+    <head>
+        <meta charset="utf-8">
+        <title>MobileNet Prediction Demo</title>
+        <!-- Load the latest version of TensorFlow.js -->
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    </head>
+    <body>
+        <!--Link our predict.js-->
+        <script src="predict.js"></script>
+        <!-- Load TensorFlow.js. This is required to use MobileNet. -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
+    <!-- Load the MobileNet model.
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
+    <!--Upload image option to test with multiple images -->
 
-<input type='file' onchange="uploadImg(this);" />
-<img id="img" src="#" alt="Upload Image" />
-<!-- Replace this with your image. Make sure CORS settings allow reading the image! -->
+    <input type='file' oninput="uploadImg(this);" />
+    <figure>
+        <img id="img" src="#" alt="Upload Image" />
+        <figcaption id="img_caption"> </figcaption>
+    </figure>
+    
+    <input type='file' webkitdirectory mozdirectory oninput="uploadFolder(this);"/> 
+    <p>Upload Folder</p>
+        
+
+    <!-- Replace this with your image. Make sure CORS settings allow reading the image! -->
 
 
-</body>
+    </body>
 </html>
