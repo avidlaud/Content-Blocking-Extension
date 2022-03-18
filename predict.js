@@ -28,26 +28,6 @@ function uploadImg(input) {
            reader.readAsDataURL(input.files[0]);
        }
 }
-//
-// function uploadImg(input){
-//       console.log('uploadImg');
-//
-//       var reader = new FileReader();
-//       reader.onload = function (e) {
-//           var img = document.getElementById('img');
-//           console.log('Loading Image');
-//           img.src = e.target.result;
-//           img.width = 224;
-//           img.height = 224;
-//           app().catch(function(error) {
-//              console.log('%cFailed to classify image', 'color:red')
-//              console.log(error)
-//           });
-//       };
-//       if (input.files && input.files[0]) {
-//            reader.readAsDataURL(input.files[0]);
-//       }
-// }
 
 async function uploadFolder(input){
       console.log('uploadFolder');
@@ -58,24 +38,29 @@ async function uploadFolder(input){
             console.log('image ' + i)
             var reader = new FileReader();
             reader.onload = function (e) {
-                var img = input.files[i];
-                console.log(img)
+                // var img = input.files[i];
+                var img = document.createElement("img");
                 img.src = e.target.result;
                 img.width = 224;
                 img.height = 224;
-                appFolder(img).catch(function(error) {
+                img.id = "img" + i;
+                document.getElementById('batch_test').appendChild(img);
+                appFolder(img.id).catch(function(error) {
                     console.log('%cFailed to classify image', 'color:red')
                     console.log(error)
                 });
             };
+            // console.log(input.files[i]);
             await reader.readAsDataURL(input.files[i]);
           }
       }
 }
 
-async function appFolder(im){
+async function appFolder(id){
     console.log('Folder upload');
-    const result = await net.classify(im);
+    // console.log(im);
+    const img = await document.getElementById(id);
+    const result = await net.classify(img);
     console.log(result[0].className);
 }
 
@@ -84,6 +69,7 @@ async function app() {
   console.log('Image uploaded successfully')
   const imgEl =  await document.getElementById('img'); //grab image from uploaded image selected
   const result = await net.classify(imgEl)
+  console.log(imgEl);
   var caption = document.getElementById('img_caption');
   caption.innerHTML = result[0].className;
   console.log(result[0].className);
