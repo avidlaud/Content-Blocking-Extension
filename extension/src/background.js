@@ -17,3 +17,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
     // return Promise.resolve("Dummy response");
 });
+
+// Listen for images from the content script
+// const port = chrome.runtime.connect({name:"image-channel"});
+// port.onMessage.addListener((msg) => {
+//     // msg is image
+//     console.log(msg);
+// })
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.message === 'store_image') {
+        console.log(request.img)
+        console.log("Got image")
+    }
+    return true;
+    // return Promise.resolve("Dummy response");
+});
