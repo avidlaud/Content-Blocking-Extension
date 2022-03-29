@@ -14,5 +14,11 @@
     ],
     "action": {
         "default_popup": "popup.html"
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "resources": ["dog.png"],
+            "matches": ["<all_urls>"]
+        }
+    ]
 }
