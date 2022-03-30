@@ -1,6 +1,7 @@
 const findImages = async () => {
-    let images = document.querySelectorAll('img:not(.image-classified)');
+    const images = document.querySelectorAll('img:not(.image-classified)');
 
+    /* eslint-disable-next-line */
     for (const image of images) {
         chrome.runtime.sendMessage({ message: 'classify_image', img: image.src }, (resp) => {
             console.log(resp);
@@ -9,9 +10,9 @@ const findImages = async () => {
         // image.src = chrome.runtime.getURL('assets/block.png');
         // Remove the srcset, which is used for responsive images
         // image.srcset = "";
-        image.classList.add("image-classified")
+        image.classList.add('image-classified');
     }
-}
+};
 
 const observer = new MutationObserver(() => {
     findImages();

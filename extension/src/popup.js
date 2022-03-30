@@ -1,4 +1,4 @@
-const formDownload = document.getElementById("formDownload");
+const formDownload = document.getElementById('formDownload');
 
 // const sendDownloadRequest = async(event) => {
 //     chrome.runtime.sendMessage({
@@ -18,7 +18,7 @@ const sendDownloadRequest = (event) => {
     }, (response) => {
         const pResponse = document.getElementById('pResponse');
         pResponse.innerHTML = response;
-    })
+    });
 };
 
 formDownload.addEventListener('submit', sendDownloadRequest);
