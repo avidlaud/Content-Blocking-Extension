@@ -13,7 +13,7 @@ const sendDownloadRequest = (event) => {
     event.preventDefault();
     const filename = document.getElementById('inputFilename').value;
     chrome.runtime.sendMessage({
-        message: 'downloadRequest',
+        message: 'modelTest',
         data: filename,
     }, (response) => {
         const pResponse = document.getElementById('pResponse');
