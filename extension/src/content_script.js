@@ -1,3 +1,5 @@
+const blockImage = chrome.runtime.getURL('block.png');
+
 const findImages = async () => {
     const images = document.querySelectorAll('img:not(.image-classified)');
 
@@ -5,6 +7,10 @@ const findImages = async () => {
     for (const image of images) {
         chrome.runtime.sendMessage({ message: 'classify_image', img: image.src }, (resp) => {
             console.log(resp);
+            if (resp.block) {
+                image.src = blockImage;
+                image.srcset = '';
+            }
         });
         // port.postMessage("Found image");
         // image.src = chrome.runtime.getURL('assets/block.png');
