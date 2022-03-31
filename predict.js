@@ -32,6 +32,7 @@ function uploadImg(input) {
 async function uploadFolder(input){
       console.log('uploadFolder');
       console.log(input.files);
+      const startTime = Date.now();
       if (input.files && input.files[0]) {
 
           for(let i=0; i<input.files.length; i++){
@@ -54,25 +55,29 @@ async function uploadFolder(input){
             await reader.readAsDataURL(input.files[i]);
           }
       }
+      console.log("Batch test time: " + input.files.length + " images done in " + (Date.now() - startTime) + " ms");
 }
 
 async function appFolder(id){
+    const startTime = Date.now();
     console.log('Folder upload');
-    // console.log(im);
     const img = await document.getElementById(id);
     const result = await net.classify(img);
-    console.log(result[0].className);
+    console.log(result);
+    console.log("Time taken for image " + id + ": " + (Date.now() - startTime));
 }
 
 async function app() {
   // Make a prediction through the model on our image.
+  const startTime = Date.now();
   console.log('Image uploaded successfully')
   const imgEl =  await document.getElementById('img'); //grab image from uploaded image selected
   const result = await net.classify(imgEl)
   console.log(imgEl);
   var caption = document.getElementById('img_caption');
   caption.innerHTML = result[0].className;
-  console.log(result[0].className);
+  console.log(result);
+  console.log("Time taken to classify: " + (Date.now() - startTime));
 }
 
 window.onload = function() {
