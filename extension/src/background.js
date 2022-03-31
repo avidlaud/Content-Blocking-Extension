@@ -50,6 +50,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     // return Promise.resolve("Dummy response");
 });
 
+// Integrate with config
+const shouldBlock = (classification) => (classification.className === 'banana');
+
 // Listen for images from the content script
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     if (request.message === 'classify_image') {
@@ -67,7 +70,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         console.log(await predictions);
         const classifications = await predictions;
         const classification = classifications[0];
-        sendResponse({ classification });
+        sendResponse({ classification, block: shouldBlock(classification) });
     }
     return true;
     // return Promise.resolve("Dummy response");
