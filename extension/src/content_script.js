@@ -12,10 +12,6 @@ const findImages = async () => {
                 image.srcset = '';
             }
         });
-        // port.postMessage("Found image");
-        // image.src = chrome.runtime.getURL('assets/block.png');
-        // Remove the srcset, which is used for responsive images
-        // image.srcset = "";
         image.classList.add('image-classified');
     }
 };
