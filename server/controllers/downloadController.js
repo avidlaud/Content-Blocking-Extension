@@ -37,3 +37,20 @@ exports.downloadS3 = (req, res) => {
     });
     fileStream.pipe(res);
 };
+
+exports.listModels = async (req, res) => {
+    const files = (await fs.promises.readdir('models', { withFileTypes: true }))
+        .filter((entry) => entry.isDirectory())
+        .map((dir) => dir.name);
+    res.json(files);
+};
+
+exports.hasModel = (req, res) => {
+    const { modelName } = req.query;
+    // Check if the model exists
+    if (fs.existsSync(`models/${modelName}`)) {
+        res.sendStatus(200);
+    } else {
+        res.status(404).send('Model not found!');
+    }
+};

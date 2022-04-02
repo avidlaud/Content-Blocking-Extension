@@ -8,4 +8,8 @@ router.get('/', downloadController.download);
 
 router.get('/s3', downloadController.downloadS3);
 
+router.get('/listModels', downloadController.listModels);
+
+router.get('/hasModel', downloadController.hasModel);
+
 module.exports = router;
