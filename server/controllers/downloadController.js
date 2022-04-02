@@ -37,3 +37,13 @@ exports.downloadS3 = (req, res) => {
     });
     fileStream.pipe(res);
 };
+
+exports.hasModel = (req, res) => {
+    const { modelName } = req.query;
+    // Check if the model exists
+    if (fs.existsSync(`models/${modelName}`)) {
+        res.sendStatus(200);
+    } else {
+        res.status(404).send('Model not found!');
+    }
+};

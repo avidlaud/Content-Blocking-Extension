@@ -11,4 +11,6 @@ app.use('/download', downloadRoute);
 
 app.use('/upload', uploadRoute);
 
+app.use('/models', express.static('models'));
+
 module.exports = app;
