@@ -1,23 +1,35 @@
 const blockImage = chrome.runtime.getURL('block.png');
 
-const findImages = async () => {
-    const images = document.querySelectorAll('img:not(.image-classified)');
-
-    /* eslint-disable-next-line */
-    for (const image of images) {
-        chrome.runtime.sendMessage({ message: 'classify_image', img: image.src }, (resp) => {
-            console.log(resp);
-            if (resp.block) {
-                image.src = blockImage;
-                image.srcset = '';
+const observer = new MutationObserver((mutations) => {
+    for (let i = 0; i < mutations.length; i += 1) {
+        const mutRecord = mutations[i];
+        if (mutRecord.type === 'childList') {
+            for (let j = 0; j < mutRecord.addedNodes.length; j += 1) {
+                if (mutRecord.addedNodes[j].nodeName === 'IMG') {
+                    const image = mutRecord.addedNodes[j];
+                    console.log(image.src);
+                    chrome.runtime.sendMessage({ message: 'classify_image', img: image.src }, (resp) => {
+                        console.log(resp);
+                        if (resp.block) {
+                            image.src = blockImage;
+                            image.srcset = '';
+                        }
+                    });
+                }
             }
-        });
-        image.classList.add('image-classified');
+        } else if (mutRecord.type === 'attributes') {
+            if (mutRecord.target.nodeName === 'IMG' && mutRecord.target.src !== blockImage) {
+                const image = mutRecord.target;
+                chrome.runtime.sendMessage({ message: 'classify_image', img: image.src }, (resp) => {
+                    console.log(resp);
+                    if (resp.block) {
+                        image.src = blockImage;
+                        image.srcset = '';
+                    }
+                });
+            }
+        }
     }
-};
-
-const observer = new MutationObserver(() => {
-    findImages();
 });
 
-observer.observe(document.body, { subtree: true, childList: true });
+observer.observe(document.documentElement, { attributes: true, subtree: true, childList: true });
