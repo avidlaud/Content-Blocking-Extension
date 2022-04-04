@@ -34,9 +34,14 @@ class ImageClassifier {
         }
         // const predictions = await this.model.classify(imageData, 2);
         // console.log(predictions);
-        const logits = this.model.predict(this.constructor.normalizeInput(imageData));
-        const softmax = tf.softmax(logits);
+        const softmax = tf.tidy(() => {
+            const logits = this.model.predict(this.constructor.normalizeInput(imageData));
+            return tf.softmax(logits);
+        });
+        // const logits = this.model.predict(this.constructor.normalizeInput(imageData));
+        // const softmax = tf.softmax(logits);
         const values = await softmax.data();
+        softmax.dispose();
         // TODO: Below is specific to Mobilenet - change once we switch to a binary classifier
         const valuesAndIndices = [];
         for (let i = 0; i < values.length; i += 1) {
@@ -59,6 +64,7 @@ class ImageClassifier {
             });
         }
         console.log(topClassesAndProbs);
+        // console.log(tf.memory());
         return topClassesAndProbs;
     }
 
@@ -94,6 +100,10 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         console.log('Got image');
         const imgResponse = await fetch(request.img);
         const imgBlob = await imgResponse.blob();
+        // Do not perform inference on tiny images (often used as placeholders)
+        if (imgBlob.size < 100) {
+            sendResponse({ classification: 'Likely Placeholder', block: false });
+        }
         // Resize image to 224x224 to fit model spec
         const imgBitmap = await createImageBitmap(imgBlob, { resizeHeight: 224, resizeWidth: 224 });
         const canvas = new OffscreenCanvas(224, 224);
