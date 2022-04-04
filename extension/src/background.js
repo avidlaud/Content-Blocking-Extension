@@ -34,9 +34,12 @@ class ImageClassifier {
         }
         // const predictions = await this.model.classify(imageData, 2);
         // console.log(predictions);
-        const logits = this.model.predict(this.constructor.normalizeInput(imageData));
-        const softmax = tf.softmax(logits);
-        logits.dispose();
+        const softmax = tf.tidy(() => {
+            const logits = this.model.predict(this.constructor.normalizeInput(imageData));
+            return tf.softmax(logits);
+        });
+        // const logits = this.model.predict(this.constructor.normalizeInput(imageData));
+        // const softmax = tf.softmax(logits);
         const values = await softmax.data();
         softmax.dispose();
         // TODO: Below is specific to Mobilenet - change once we switch to a binary classifier
@@ -61,6 +64,7 @@ class ImageClassifier {
             });
         }
         console.log(topClassesAndProbs);
+        // console.log(tf.memory());
         return topClassesAndProbs;
     }
 
