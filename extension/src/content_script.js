@@ -1,4 +1,7 @@
 const blockImage = chrome.runtime.getURL('block.png');
+const blankImage = chrome.runtime.getURL('blank.png');
+
+const useStrictMode = true;
 
 const observer = new MutationObserver((mutations) => {
     for (let i = 0; i < mutations.length; i += 1) {
@@ -6,25 +9,41 @@ const observer = new MutationObserver((mutations) => {
         if (mutRecord.type === 'childList') {
             for (let j = 0; j < mutRecord.addedNodes.length; j += 1) {
                 if (mutRecord.addedNodes[j].nodeName === 'IMG') {
+                    console.log('Image changed!');
                     const image = mutRecord.addedNodes[j];
-                    console.log(image.src);
-                    chrome.runtime.sendMessage({ message: 'classify_image', img: image.src }, (resp) => {
+                    const originalImage = image.src.slice();
+                    if (useStrictMode) {
+                        image.src = blankImage;
+                    }
+                    chrome.runtime.sendMessage({ message: 'classify_image', img: originalImage }, (resp) => {
                         console.log(resp);
                         if (resp.block) {
                             image.src = blockImage;
                             image.srcset = '';
+                        } else if (!resp.isPlaceholder && useStrictMode) {
+                            image.src = originalImage;
                         }
                     });
                 }
             }
         } else if (mutRecord.type === 'attributes') {
-            if (mutRecord.target.nodeName === 'IMG' && mutRecord.target.src !== blockImage) {
+            if (mutRecord.target.nodeName === 'IMG' && mutRecord.target.src !== blockImage && mutRecord.target.src !== blankImage && !mutRecord.target.classList.contains('classified')) {
+                console.log('Attributes changed!');
                 const image = mutRecord.target;
-                chrome.runtime.sendMessage({ message: 'classify_image', img: image.src }, (resp) => {
+                const originalImage = image.src.slice();
+                if (useStrictMode) {
+                    image.src = blankImage;
+                }
+                chrome.runtime.sendMessage({ message: 'classify_image', img: originalImage }, (resp) => {
                     console.log(resp);
                     if (resp.block) {
                         image.src = blockImage;
                         image.srcset = '';
+                    } else if (useStrictMode) {
+                        image.src = originalImage;
+                    }
+                    if (!resp.isPlaceholder) {
+                        mutRecord.target.classList.add('classified');
                     }
                 });
             }
