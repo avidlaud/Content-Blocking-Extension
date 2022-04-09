@@ -1,6 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
 import modelStorage from './modelStorage';
-import IMAGENET_CLASSES from './imagenet_classes';
 
 // Implement with async later
 // const handleDownloadRequest = async(data) => {
@@ -14,13 +13,14 @@ class ImageClassifier {
     }
 
     async loadModel() {
-        const modelPromise = modelStorage.get('mobilenet-model');
+        const modelPromise = modelStorage.get('dogs');
         this.model = await modelPromise;
-        this.model.summary();
+        // this.model = await tf.loadGraphModel('http://localhost:10000/models/dogs/model.json');
+        // this.model.summary();
         // Test model
-        const result = tf.tidy(() => this.model.predict(tf.zeros([1, 224, 224, 3])));
-        console.log(await result.data());
-        result.dispose();
+        // const result = tf.tidy(() => this.model.predict(tf.zeros([1, 224, 224, 3])));
+        // console.log(await result.data());
+        // result.dispose();
         console.log('Model loaded');
     }
 
@@ -32,40 +32,45 @@ class ImageClassifier {
             }, 5000);
             return null;
         }
+        const probabilities = tf.tidy(() => {
+            const predictions = this.model.predict(this.constructor.normalizeInput(imageData));
+            return predictions.dataSync();
+        });
+        return probabilities;
         // const predictions = await this.model.classify(imageData, 2);
         // console.log(predictions);
-        const softmax = tf.tidy(() => {
-            const logits = this.model.predict(this.constructor.normalizeInput(imageData));
-            return tf.softmax(logits);
-        });
-        // const logits = this.model.predict(this.constructor.normalizeInput(imageData));
-        // const softmax = tf.softmax(logits);
-        const values = await softmax.data();
-        softmax.dispose();
-        // TODO: Below is specific to Mobilenet - change once we switch to a binary classifier
-        const valuesAndIndices = [];
-        for (let i = 0; i < values.length; i += 1) {
-            valuesAndIndices.push({ value: values[i], index: i });
-        }
-        valuesAndIndices.sort((a, b) => b.value - a.value);
-        const topK = 2;
-        const topkValues = new Float32Array(topK);
-        const topkIndices = new Int32Array(topK);
-        for (let i = 0; i < topK; i += 1) {
-            topkValues[i] = valuesAndIndices[i].value;
-            topkIndices[i] = valuesAndIndices[i].index;
-        }
+        // const softmax = tf.tidy(() => {
+        //     const logits = this.model.predict(this.constructor.normalizeInput(imageData));
+        //     return tf.softmax(logits);
+        // });
+        // // const logits = this.model.predict(this.constructor.normalizeInput(imageData));
+        // // const softmax = tf.softmax(logits);
+        // const values = await softmax.data();
+        // softmax.dispose();
+        // // TODO: Below is specific to Mobilenet - change once we switch to a binary classifier
+        // const valuesAndIndices = [];
+        // for (let i = 0; i < values.length; i += 1) {
+        //     valuesAndIndices.push({ value: values[i], index: i });
+        // }
+        // valuesAndIndices.sort((a, b) => b.value - a.value);
+        // const topK = 2;
+        // const topkValues = new Float32Array(topK);
+        // const topkIndices = new Int32Array(topK);
+        // for (let i = 0; i < topK; i += 1) {
+        //     topkValues[i] = valuesAndIndices[i].value;
+        //     topkIndices[i] = valuesAndIndices[i].index;
+        // }
 
-        const topClassesAndProbs = [];
-        for (let i = 0; i < topkIndices.length; i += 1) {
-            topClassesAndProbs.push({
-                className: IMAGENET_CLASSES[topkIndices[i]],
-                probability: topkValues[i],
-            });
-        }
-        console.log(topClassesAndProbs);
-        // console.log(tf.memory());
-        return topClassesAndProbs;
+        // const topClassesAndProbs = [];
+        // for (let i = 0; i < topkIndices.length; i += 1) {
+        //     topClassesAndProbs.push({
+        //         className: IMAGENET_CLASSES[topkIndices[i]],
+        //         probability: topkValues[i],
+        //     });
+        // }
+        // console.log(topClassesAndProbs);
+        // // console.log(tf.memory());
+        // return topClassesAndProbs;
     }
 
     static normalizeInput(imageData) {
@@ -92,7 +97,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Integrate with config
-const shouldBlock = (classification) => (classification.className === 'banana');
+const shouldBlock = (classification) => (classification[0] > 0.75);
 
 // Listen for images from the content script
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
@@ -112,10 +117,14 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         const arr = Array.from(ctx.getImageData(0, 0, 224, 224).data);
         const imageData = new ImageData(Uint8ClampedArray.from(arr), 224, 224);
         const predictions = imageClassifier.analyzeImage(imageData);
-        console.log(await predictions);
-        const classifications = await predictions;
-        const classification = classifications[0];
-        sendResponse({ classification, block: shouldBlock(classification) });
+        // console.log(await predictions);
+        // console.log((await predictions)[0]);
+        // console.log(shouldBlock(await predictions));
+        // console.log(await predictions);
+        sendResponse({ block: shouldBlock(await predictions) });
+        // const classifications = await predictions;
+        // const classification = classifications[0];
+        // sendResponse({ classification, block: shouldBlock(classification) });
     }
     return true;
     // return Promise.resolve("Dummy response");
