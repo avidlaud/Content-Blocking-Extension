@@ -13,6 +13,9 @@
             "run_at": "document_start"
         }
     ],
+    "permissions": [
+        "storage"
+    ],
     "action": {
         "default_popup": "popup.html"
     },
