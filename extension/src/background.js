@@ -106,17 +106,22 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             sendResponse({ classification: 'Likely Placeholder', block: false, isPlaceholder: true });
         }
         // Resize image to 224x224 to fit model spec
-        const imgBitmap = await createImageBitmap(imgBlob, { resizeHeight: 224, resizeWidth: 224 });
-        const canvas = new OffscreenCanvas(224, 224);
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(imgBitmap, 0, 0);
-        const arr = Array.from(ctx.getImageData(0, 0, 224, 224).data);
-        const imageData = new ImageData(Uint8ClampedArray.from(arr), 224, 224);
-        const predictions = imageClassifier.analyzeImage(imageData);
-        console.log(await predictions);
-        const classifications = await predictions;
-        const classification = classifications[0];
-        sendResponse({ classification, block: shouldBlock(classification), isPlaceholder: false });
+        try {
+            const imgBitmap = await createImageBitmap(imgBlob, { resizeHeight: 224, resizeWidth: 224 });
+            const canvas = new OffscreenCanvas(224, 224);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(imgBitmap, 0, 0);
+            const arr = Array.from(ctx.getImageData(0, 0, 224, 224).data);
+            const imageData = new ImageData(Uint8ClampedArray.from(arr), 224, 224);
+            const predictions = imageClassifier.analyzeImage(imageData);
+            console.log(await predictions);
+            const classifications = await predictions;
+            const classification = classifications[0];
+            sendResponse({ classification, block: shouldBlock(classification), isPlaceholder: false });
+        } catch (e) {
+            console.log(e);
+            // sendResponse({ block: false, isPlaceholder: true });
+        }
     }
     return true;
     // return Promise.resolve("Dummy response");
