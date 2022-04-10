@@ -1,7 +1,23 @@
+/* eslint-disable no-loop-func */
+// ^ Linter is being overly cautious with a read-only variable
 const blockImage = chrome.runtime.getURL('block.png');
 const blankImage = chrome.runtime.getURL('blank.png');
 
-const useStrictMode = true;
+let useStrictMode = true;
+chrome.storage.sync.get('strictModeOn', (storage) => {
+    useStrictMode = storage.strictModeOn;
+    console.log(`Strict mode is ${useStrictMode ? 'on' : 'off'}`);
+});
+
+chrome.storage.onChanged.addListener((changes) => {
+    if (changes.strictModeOn) {
+        chrome.storage.sync.get('strictModeOn', (storage) => {
+            useStrictMode = storage.strictModeOn;
+            console.log(`Strict mode is ${useStrictMode ? 'on' : 'off'}`);
+        });
+        console.log('Strict mode changed!');
+    }
+});
 
 const observer = new MutationObserver((mutations) => {
     for (let i = 0; i < mutations.length; i += 1) {
