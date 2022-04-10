@@ -102,7 +102,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         const imgBlob = await imgResponse.blob();
         // Do not perform inference on tiny images (often used as placeholders)
         if (imgBlob.size < 100) {
-            sendResponse({ classification: 'Likely Placeholder', block: false });
+            console.log('Placeholder found!', request.img);
+            sendResponse({ classification: 'Likely Placeholder', block: false, isPlaceholder: true });
         }
         // Resize image to 224x224 to fit model spec
         const imgBitmap = await createImageBitmap(imgBlob, { resizeHeight: 224, resizeWidth: 224 });
@@ -115,7 +116,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         console.log(await predictions);
         const classifications = await predictions;
         const classification = classifications[0];
-        sendResponse({ classification, block: shouldBlock(classification) });
+        sendResponse({ classification, block: shouldBlock(classification), isPlaceholder: false });
     }
     return true;
     // return Promise.resolve("Dummy response");
