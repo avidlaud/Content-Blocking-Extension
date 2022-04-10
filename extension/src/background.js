@@ -2,12 +2,6 @@ import * as tf from '@tensorflow/tfjs';
 import modelStorage from './modelStorage';
 import IMAGENET_CLASSES from './imagenet_classes';
 
-// Implement with async later
-// const handleDownloadRequest = async(data) => {
-//     const file = fetch('http://ec2-3-80-69-220.compute-1.amazonaws.com:10000/download/s3?name=a');
-//     console.log(await (await file).text());
-// }
-
 class ImageClassifier {
     constructor() {
         this.loadModel();
@@ -32,14 +26,10 @@ class ImageClassifier {
             }, 5000);
             return null;
         }
-        // const predictions = await this.model.classify(imageData, 2);
-        // console.log(predictions);
         const softmax = tf.tidy(() => {
             const logits = this.model.predict(this.constructor.normalizeInput(imageData));
             return tf.softmax(logits);
         });
-        // const logits = this.model.predict(this.constructor.normalizeInput(imageData));
-        // const softmax = tf.softmax(logits);
         const values = await softmax.data();
         softmax.dispose();
         // TODO: Below is specific to Mobilenet - change once we switch to a binary classifier
@@ -64,7 +54,6 @@ class ImageClassifier {
             });
         }
         console.log(topClassesAndProbs);
-        // console.log(tf.memory());
         return topClassesAndProbs;
     }
 
@@ -76,20 +65,6 @@ class ImageClassifier {
 }
 
 const imageClassifier = new ImageClassifier();
-
-const handleDownloadRequest = (data) => {
-    fetch(`http://ec2-3-80-69-220.compute-1.amazonaws.com:10000/download/s3?name=${data}`).then((resp) => resp.text()).then((fileContents) => console.log(fileContents));
-    return 'Done!';
-};
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.message === 'downloadRequest') {
-        const result = handleDownloadRequest(request.data);
-        sendResponse(result);
-    }
-    return true;
-    // return Promise.resolve("Dummy response");
-});
 
 // Integrate with config
 const shouldBlock = (classification) => (classification.className === 'banana');
@@ -120,9 +95,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             sendResponse({ classification, block: shouldBlock(classification), isPlaceholder: false });
         } catch (e) {
             console.log(e);
-            // sendResponse({ block: false, isPlaceholder: true });
         }
     }
     return true;
-    // return Promise.resolve("Dummy response");
 });
