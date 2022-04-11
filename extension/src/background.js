@@ -99,3 +99,8 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     }
     return true;
 });
+
+// Needs this or else the other listener won't work properly
+chrome.runtime.onMessage.addListener(() => {
+    return true;
+});
