@@ -9,13 +9,20 @@
     "content_scripts": [
         {
             "matches": [ "<all_urls>" ],
-            "js": [ "content_script.js" ]
+            "js": [ "content_script.js" ],
+            "run_at": "document_start"
         }
     ],
+<<<<<<< HEAD
     "permissions":[
         "storage"
     ],
     "options_page": "options.html",
+=======
+    "permissions": [
+        "storage"
+    ],
+>>>>>>> b5b72c68a47a9eec86d94c2dbcbd53f9e8c1e6e7
     "action": {
         "default_popup": "popup.html"
     },

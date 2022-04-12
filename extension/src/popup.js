@@ -1,24 +1,18 @@
-const formDownload = document.getElementById('formDownload');
+const buttonToggleMode = document.getElementById('buttonToggleMode');
 
-// const sendDownloadRequest = async(event) => {
-//     chrome.runtime.sendMessage({
-//         msg: 'downloadRequest',
-//         data: 'a'
-//     }, (response) => {
-//         // Display something probably
-//     })
-// };
+chrome.storage.sync.get('strictModeOn', (storage) => {
+    buttonToggleMode.innerText = storage.strictModeOn ? 'Strict Mode' : 'Relaxed Mode';
+});
 
-const sendDownloadRequest = (event) => {
-    event.preventDefault();
-    const filename = document.getElementById('inputFilename').value;
-    chrome.runtime.sendMessage({
-        message: 'modelTest',
-        data: filename,
-    }, (response) => {
-        const pResponse = document.getElementById('pResponse');
-        pResponse.innerHTML = response;
+const toggleMode = () => {
+    chrome.storage.sync.get('strictModeOn', (storage) => {
+        chrome.storage.sync.set({
+            strictModeOn: !storage.strictModeOn,
+        });
+        buttonToggleMode.innerText = !storage.strictModeOn ? 'Strict Mode' : 'Relaxed Mode';
     });
 };
 
-formDownload.addEventListener('submit', sendDownloadRequest);
+buttonToggleMode.addEventListener('click', () => {
+    toggleMode();
+});

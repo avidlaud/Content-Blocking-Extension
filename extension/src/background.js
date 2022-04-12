@@ -2,12 +2,6 @@ import * as tf from '@tensorflow/tfjs';
 import modelStorage from './modelStorage';
 import IMAGENET_CLASSES from './imagenet_classes';
 
-// Implement with async later
-// const handleDownloadRequest = async(data) => {
-//     const file = fetch('http://ec2-3-80-69-220.compute-1.amazonaws.com:10000/download/s3?name=a');
-//     console.log(await (await file).text());
-// }
-
 class ImageClassifier {
     constructor() {
         this.loadModel();
@@ -32,11 +26,12 @@ class ImageClassifier {
             }, 5000);
             return null;
         }
-        // const predictions = await this.model.classify(imageData, 2);
-        // console.log(predictions);
-        const logits = this.model.predict(this.constructor.normalizeInput(imageData));
-        const softmax = tf.softmax(logits);
+        const softmax = tf.tidy(() => {
+            const logits = this.model.predict(this.constructor.normalizeInput(imageData));
+            return tf.softmax(logits);
+        });
         const values = await softmax.data();
+        softmax.dispose();
         // TODO: Below is specific to Mobilenet - change once we switch to a binary classifier
         const valuesAndIndices = [];
         for (let i = 0; i < values.length; i += 1) {
@@ -71,20 +66,6 @@ class ImageClassifier {
 
 const imageClassifier = new ImageClassifier();
 
-const handleDownloadRequest = (data) => {
-    fetch(`http://ec2-3-80-69-220.compute-1.amazonaws.com:10000/download/s3?name=${data}`).then((resp) => resp.text()).then((fileContents) => console.log(fileContents));
-    return 'Done!';
-};
-
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.message === 'downloadRequest') {
-        const result = handleDownloadRequest(request.data);
-        sendResponse(result);
-    }
-    return true;
-    // return Promise.resolve("Dummy response");
-});
-
 // Integrate with config
 const shouldBlock = (classification) => (classification.className === 'banana');
 
@@ -94,19 +75,32 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
         console.log('Got image');
         const imgResponse = await fetch(request.img);
         const imgBlob = await imgResponse.blob();
+        // Do not perform inference on tiny images (often used as placeholders)
+        if (imgBlob.size < 100) {
+            console.log('Placeholder found!', request.img);
+            sendResponse({ classification: 'Likely Placeholder', block: false, isPlaceholder: true });
+        }
         // Resize image to 224x224 to fit model spec
-        const imgBitmap = await createImageBitmap(imgBlob, { resizeHeight: 224, resizeWidth: 224 });
-        const canvas = new OffscreenCanvas(224, 224);
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(imgBitmap, 0, 0);
-        const arr = Array.from(ctx.getImageData(0, 0, 224, 224).data);
-        const imageData = new ImageData(Uint8ClampedArray.from(arr), 224, 224);
-        const predictions = imageClassifier.analyzeImage(imageData);
-        console.log(await predictions);
-        const classifications = await predictions;
-        const classification = classifications[0];
-        sendResponse({ classification, block: shouldBlock(classification) });
+        try {
+            const imgBitmap = await createImageBitmap(imgBlob, { resizeHeight: 224, resizeWidth: 224 });
+            const canvas = new OffscreenCanvas(224, 224);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(imgBitmap, 0, 0);
+            const arr = Array.from(ctx.getImageData(0, 0, 224, 224).data);
+            const imageData = new ImageData(Uint8ClampedArray.from(arr), 224, 224);
+            const predictions = imageClassifier.analyzeImage(imageData);
+            console.log(await predictions);
+            const classifications = await predictions;
+            const classification = classifications[0];
+            sendResponse({ classification, block: shouldBlock(classification), isPlaceholder: false });
+        } catch (e) {
+            console.log(e);
+        }
     }
     return true;
-    // return Promise.resolve("Dummy response");
+});
+
+// Needs this or else the other listener won't work properly
+chrome.runtime.onMessage.addListener(() => {
+    return true;
 });
