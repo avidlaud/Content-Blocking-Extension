@@ -1,6 +1,9 @@
 function save_options() {
     var color = document.getElementById('color').value;
     var likesColor = document.getElementById('like').checked;
+    //creating a list of models
+    
+    
     chrome.storage.sync.set({
       favoriteColor: color,
       likesColor: likesColor
@@ -30,3 +33,13 @@ function save_options() {
   document.addEventListener('DOMContentLoaded', restore_options);
   document.getElementById('save').addEventListener('click',
       save_options);
+  
+  function get_models() {
+    //var models = downloadController.listModels;
+    /*let list = document.getElementById("listModels");
+    models.forEach((item)=>{
+      let li = document.createElement("li");
+      li.innerText = item;
+      list.appendChild(li);
+    })*/
+  }

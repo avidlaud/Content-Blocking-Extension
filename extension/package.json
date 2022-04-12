@@ -10,10 +10,14 @@
     "prod": {}
   },
   "scripts": {
-    "clean": "rmdir dist .parcel-cache",
+    "clean": "rm -rf dist .parcel-cache",
     "cleanbuild": "yarn run clean && yarn run build",
-    "copy": "mkdir dist && copy manifest.json dist\\",
-    "build": "yarn run copy && parcel build src\\*"
+    "copy": "mkdir dist && cp manifest.json dist/",
+    "build": "yarn run copy && parcel build src/*",
+    "winclean": "rmdir dist .parcel-cache",
+    "wincleanbuild": "yarn run winclean && yarn run winbuild",
+    "wincopy": "mkdir dist && copy manifest.json dist\\",
+    "winbuild": "yarn run wincopy && parcel build src\\*"
   },
   "dependencies": {
     "@tensorflow-models/mobilenet": "^2.1.0",
