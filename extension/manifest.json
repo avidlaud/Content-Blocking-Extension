@@ -12,9 +12,14 @@
             "js": [ "content_script.js" ]
         }
     ],
+    "permissions":[
+        "storage"
+    ],
+    "options_page": "options.html",
     "action": {
         "default_popup": "popup.html"
     },
+    
     "web_accessible_resources": [
         {
             "resources": [ "*.png" ],
