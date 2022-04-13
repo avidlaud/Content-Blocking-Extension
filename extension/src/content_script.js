@@ -19,6 +19,29 @@ chrome.storage.onChanged.addListener((changes) => {
     }
 });
 
+const revealImage = (event) => {
+    event.target.linkedImage.src = event.target.linkedImage.originalImage;
+    event.target.remove();
+};
+
+const wrapWithDiv = (element) => {
+    if (element.classList.contains('wrapped')) {
+        return;
+    }
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('overlaywrapper');
+    element.parentNode.insertBefore(wrapper, element);
+    wrapper.appendChild(element);
+    element.classList.add('wrapped');
+
+    const revealButton = document.createElement('button');
+    revealButton.linkedImage = element;
+    revealButton.innerHTML = 'Reveal Image';
+    revealButton.classList.add('overlaybtn');
+    revealButton.addEventListener('click', revealImage);
+    wrapper.appendChild(revealButton);
+};
+
 const observer = new MutationObserver((mutations) => {
     for (let i = 0; i < mutations.length; i += 1) {
         const mutRecord = mutations[i];
@@ -32,10 +55,14 @@ const observer = new MutationObserver((mutations) => {
                         image.src = blankImage;
                     }
                     chrome.runtime.sendMessage({ message: 'classify_image', img: originalImage }, (resp) => {
+                        if (originalImage !== blockImage) {
+                            image.originalImage = originalImage.slice();
+                        }
                         console.log(resp);
                         if (resp.block) {
                             image.src = blockImage;
                             image.srcset = '';
+                            wrapWithDiv(image);
                         } else if (!resp.isPlaceholder && useStrictMode) {
                             image.src = originalImage;
                         }
@@ -43,7 +70,7 @@ const observer = new MutationObserver((mutations) => {
                 }
             }
         } else if (mutRecord.type === 'attributes') {
-            if (mutRecord.target.nodeName === 'IMG' && mutRecord.target.src !== blockImage && mutRecord.target.src !== blankImage && !mutRecord.target.classList.contains('classified')) {
+            if (mutRecord.target.nodeName === 'IMG' && mutRecord.target.src !== blockImage && mutRecord.target.src !== blankImage && !mutRecord.target.classList.contains('classified') && !mutRecord.target.classList.contains('wrapped')) {
                 console.log('Attributes changed!');
                 const image = mutRecord.target;
                 const originalImage = image.src.slice();
@@ -52,14 +79,17 @@ const observer = new MutationObserver((mutations) => {
                 }
                 chrome.runtime.sendMessage({ message: 'classify_image', img: originalImage }, (resp) => {
                     console.log(resp);
+                    image.originalImage = originalImage.slice();
                     if (resp.block) {
                         image.src = blockImage;
                         image.srcset = '';
+                        wrapWithDiv(image);
                     } else if (useStrictMode) {
                         image.src = originalImage;
                     }
                     if (!resp.isPlaceholder) {
-                        mutRecord.target.classList.add('classified');
+                        image.classList.add('classified');
+                        // mutRecord.target.classList.add('classified');
                     }
                 });
             }
