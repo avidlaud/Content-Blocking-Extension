@@ -1,9 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head><title>My Test Extension Options</title></head>
+<head><title>My Test Extension Options</title>
+  <link rel="stylesheet" href="options.css">
+</head>
 <body>
-
-Background color:
+<h1>
+General
+</h1>
+<h2>
+List of current models:
+</h2>
+<ol>
+  <li>Model 1</li>
+  <li>Model 2</li>
+  <li>Model 3</li>
+  <li>. . .</li>
+</ol>
+Choose image to be displayed(.png)<button id="imageBlocked">Choose Image</button>
+<br>
 <select id="color">
  <option value="red">red</option>
  <option value="green">green</option>
@@ -12,10 +26,15 @@ Background color:
 </select>
 
 <label>
-  <input type="checkbox" id="like">
-  I like colors.
+<br>
+<input type="checkbox" id="contentbadge">
+Show amount of content blocked 
 </label>
-
+<br>
+<body>
+  Strict or Relaxed blocking?<button id="buttonToggleMode">Toggle Mode</button>
+ <!-- <script src="popup.js"></script>-->
+</body>
 <div id = "models">
 <u1 id = listModels></u1>
 </div>

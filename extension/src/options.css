@@ -1,0 +1,14 @@
+body{
+    background-color: white
+}
+
+button{
+    margin-left: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+select{
+    margin-top: 10px;
+    margin-bottom: 10px;   
+}
