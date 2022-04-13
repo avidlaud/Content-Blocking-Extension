@@ -2,6 +2,11 @@ import * as tf from '@tensorflow/tfjs';
 import modelStorage from './modelStorage';
 import IMAGENET_CLASSES from './imagenet_classes';
 
+let imageQueue = [];
+
+// Integrate with config
+const shouldBlock = (classification) => (classification.className === 'banana');
+
 class ImageClassifier {
     constructor() {
         this.loadModel();
@@ -27,47 +32,70 @@ class ImageClassifier {
             return null;
         }
         const softmax = tf.tidy(() => {
-            const logits = this.model.predict(this.constructor.normalizeInput(imageData));
+            // const logits = this.model.predict(this.constructor.normalizeInput(imageData));
+            const logits = this.model.predict(imageData);
             return tf.softmax(logits);
         });
         const values = await softmax.data();
         softmax.dispose();
         // TODO: Below is specific to Mobilenet - change once we switch to a binary classifier
-        const valuesAndIndices = [];
-        for (let i = 0; i < values.length; i += 1) {
-            valuesAndIndices.push({ value: values[i], index: i });
+        const output = [];
+        for(let j = 0; j < (values.length/1000); j++) {
+            const valuesAndIndices = [];
+            for (let i = 0; i < 1000; i += 1) {
+                valuesAndIndices.push({ value: values[(j * 1000) + i], index: i });
+            }
+            valuesAndIndices.sort((a, b) => b.value - a.value);
+            const topK = 2;
+            const topkValues = new Float32Array(topK);
+            const topkIndices = new Int32Array(topK);
+            for (let i = 0; i < topK; i += 1) {
+                topkValues[i] = valuesAndIndices[i].value;
+                topkIndices[i] = valuesAndIndices[i].index;
+            }
+    
+            const topClassesAndProbs = [];
+            for (let i = 0; i < topkIndices.length; i += 1) {
+                topClassesAndProbs.push({
+                    className: IMAGENET_CLASSES[topkIndices[i]],
+                    probability: topkValues[i],
+                });
+            }
+            output.push(topClassesAndProbs)
         }
-        valuesAndIndices.sort((a, b) => b.value - a.value);
-        const topK = 2;
-        const topkValues = new Float32Array(topK);
-        const topkIndices = new Int32Array(topK);
-        for (let i = 0; i < topK; i += 1) {
-            topkValues[i] = valuesAndIndices[i].value;
-            topkIndices[i] = valuesAndIndices[i].index;
-        }
+        return output;
+    }
 
-        const topClassesAndProbs = [];
-        for (let i = 0; i < topkIndices.length; i += 1) {
-            topClassesAndProbs.push({
-                className: IMAGENET_CLASSES[topkIndices[i]],
-                probability: topkValues[i],
-            });
+    async analyzeBatch(batch) {
+        const images = batch.map((batchItem) => {
+            return ImageClassifier.normalizeInput(batchItem.imageData);
+            // ImageClassifier.normalizeInput(imageData);
+        });
+        const batchTensor = tf.stack(images);
+        const predictions = await this.analyzeImage(batchTensor);
+        for (let i = 0; i < predictions.length; i++) {
+            console.log("This is a result!");
+            const classification = predictions[i][0];
+            console.log(predictions[i]);
+            const sendResponse = batch[i].responseFn;
+            sendResponse({ classification, block: shouldBlock(classification), isPlaceholder: false });
         }
-        console.log(topClassesAndProbs);
-        return topClassesAndProbs;
+        return;
     }
 
     static normalizeInput(imageData) {
         const img = tf.browser.fromPixels(imageData);
         const normalized = tf.add(tf.mul(tf.cast(img, 'float32'), (1 / 255.0)), 0);
-        return tf.reshape(normalized, [-1, 224, 224, 3]);
+        // return tf.reshape(normalized, [-1, 224, 224, 3]);
+        return tf.reshape(normalized, [224, 224, 3]);
     }
 }
 
 const imageClassifier = new ImageClassifier();
 
-// Integrate with config
-const shouldBlock = (classification) => (classification.className === 'banana');
+const queueImage = (imageData, responseFn) => {
+    imageQueue.push({ imageData, responseFn });
+};
 
 // Listen for images from the content script
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
@@ -88,11 +116,7 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
             ctx.drawImage(imgBitmap, 0, 0);
             const arr = Array.from(ctx.getImageData(0, 0, 224, 224).data);
             const imageData = new ImageData(Uint8ClampedArray.from(arr), 224, 224);
-            const predictions = imageClassifier.analyzeImage(imageData);
-            console.log(await predictions);
-            const classifications = await predictions;
-            const classification = classifications[0];
-            sendResponse({ classification, block: shouldBlock(classification), isPlaceholder: false });
+            queueImage(imageData, sendResponse);
         } catch (e) {
             console.log(e);
         }
@@ -104,3 +128,13 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 chrome.runtime.onMessage.addListener(() => {
     return true;
 });
+
+setInterval(async () => {
+    // Run the batch
+    if (imageQueue.length > 0) {
+        // There's images to analyze
+        batch = imageQueue;
+        imageQueue = [];
+        imageClassifier.analyzeBatch(batch);
+    }
+}, 200);
