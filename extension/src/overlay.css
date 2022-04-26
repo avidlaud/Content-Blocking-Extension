@@ -1,0 +1,46 @@
+.overlaybtn {
+    position: absolute;
+    background-color: #555;
+    color: white;
+    font-size: 12px;
+    padding: 4px 8px;
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+
+
+/* .overlaybtn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background-color: #555;
+    color: white;
+    font-size: 16px;
+    padding: 12px 24px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+} */
+
+/* .overlaybtn {
+    position: absolute;
+    transform: translate(-50%,-50%);
+    margin-right: -50%;
+    top: 50%;
+    left: 50%;
+} */
+
+/* .overlaybtn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+} */
+
+.overlaywrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
