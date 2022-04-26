@@ -14,7 +14,7 @@ const modelStorage = (() => {
                 // Model found
                 if (modelReq.result) {
                     console.log('Model found in IDB');
-                    const pulledModel = tf.loadLayersModel(`indexeddb://${modelName}`);
+                    const pulledModel = tf.loadGraphModel(`indexeddb://${modelName}`);
                     model = pulledModel;
                     resolve(model);
                     return;
@@ -22,7 +22,7 @@ const modelStorage = (() => {
                 // Get the model
                 // TODO: Add some code to pull from our server
                 console.log('Model not found in IDB, pulling from server...');
-                const pulledModel = await tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_1.0_224/model.json');
+                const pulledModel = await tf.loadGraphModel(`http://localhost:10000/models/${modelName}/model.json`);
                 pulledModel.save(`indexeddb://${modelName}`);
                 model = pulledModel;
                 resolve(model);
@@ -32,7 +32,7 @@ const modelStorage = (() => {
             };
         } catch (error) {
             console.log('Could not find object store - pulling model!');
-            tf.loadLayersModel('https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_1.0_224/model.json').then((pulledModel) => {
+            tf.loadGraphModel(`http://localhost:10000/models/${modelName}/model.json`).then((pulledModel) => {
                 pulledModel.save(`indexeddb://${modelName}`);
                 model = pulledModel;
                 resolve(pulledModel);
