@@ -22,7 +22,7 @@ const modelStorage = (() => {
                 // Get the model
                 // TODO: Add some code to pull from our server
                 console.log('Model not found in IDB, pulling from server...');
-                const pulledModel = await tf.loadGraphModel(`http://localhost:10000/models/${modelName}/model.json`);
+                const pulledModel = await tf.loadGraphModel(`http://ec2-3-80-69-220.compute-1.amazonaws.com:10000/models/${modelName}/model.json`);
                 pulledModel.save(`indexeddb://${modelName}`);
                 model = pulledModel;
                 resolve(model);
@@ -32,7 +32,7 @@ const modelStorage = (() => {
             };
         } catch (error) {
             console.log('Could not find object store - pulling model!');
-            tf.loadGraphModel(`http://localhost:10000/models/${modelName}/model.json`).then((pulledModel) => {
+            tf.loadGraphModel(`http://ec2-3-80-69-220.compute-1.amazonaws.com:10000/models/${modelName}/model.json`).then((pulledModel) => {
                 pulledModel.save(`indexeddb://${modelName}`);
                 model = pulledModel;
                 resolve(pulledModel);
