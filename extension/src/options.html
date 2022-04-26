@@ -10,20 +10,11 @@ General
 <h2>
 List of current models:
 </h2>
-<ol>
-  <li>Model 1</li>
-  <li>Model 2</li>
-  <li>Model 3</li>
-  <li>. . .</li>
-</ol>
-Choose image to be displayed(.png)<button id="imageBlocked">Choose Image</button>
+<div class = "modelList" id = "modelList">
+
+</div>
+
 <br>
-<select id="color">
- <option value="red">red</option>
- <option value="green">green</option>
- <option value="blue">blue</option>
- <option value="yellow">yellow</option>
-</select>
 
 <label>
 <br>
@@ -31,9 +22,25 @@ Choose image to be displayed(.png)<button id="imageBlocked">Choose Image</button
 Show amount of content blocked 
 </label>
 <br>
+<br>
+<label>
+<input type="checkbox" id="revealImage">
+Enable "Reveal Image" button 
+</label>
+
+<div class = "change-image" name = "changeImage" id = "changeImage">
+<p>Choose image to be displayed(.png)</p>
+<input type="file" name = "inpFile" id="inpFile">
+<div class="image-preview" id="imagePreview">
+    <img src="blank.png" alt="Image Preview" class="image-preview__image">
+    <span class= "image-preview__default-text">Image Preview</span>
+</div>
+</div>
+
+</label>
+<br>
 <body>
   Strict or Relaxed blocking?<button id="buttonToggleMode">Toggle Mode</button>
- <!-- <script src="popup.js"></script>-->
 </body>
 <div id = "models">
 <u1 id = listModels></u1>
@@ -45,3 +52,14 @@ Show amount of content blocked
 <script src="options.js"></script>
 </body>
 </html>
+
+
+
+<!--
+<select id="color">
+ <option value="red">red</option>
+ <option value="green">green</option>
+ <option value="blue">blue</option>
+ <option value="yellow">yellow</option>
+</select>
+-->
