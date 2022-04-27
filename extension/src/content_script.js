@@ -4,9 +4,15 @@ const blockImage = chrome.runtime.getURL('block.png');
 const blankImage = chrome.runtime.getURL('blank.png');
 
 let useStrictMode = true;
+let showRevealButton = true;
 chrome.storage.sync.get('strictModeOn', (storage) => {
     useStrictMode = storage.strictModeOn;
     console.log(`Strict mode is ${useStrictMode ? 'on' : 'off'}`);
+});
+
+chrome.storage.sync.get('revealButton', (storage) => {
+    showRevealButton = storage.revealButton;
+    console.log(`Reveal button is ${showRevealButton ? 'on' : 'off'}`);
 });
 
 chrome.storage.onChanged.addListener((changes) => {
@@ -17,6 +23,13 @@ chrome.storage.onChanged.addListener((changes) => {
         });
         console.log('Strict mode changed!');
     }
+    if (changes.revealButton) {
+        chrome.storage.sync.get('revealButton', (storage) => {
+            showRevealButton = storage.revealButton;
+            console.log(`Reveal button is ${showRevealButton ? 'on' : 'off'}`);
+        });
+        console.log('Reveal button is changed!');
+    }
 });
 
 const revealImage = (event) => {
@@ -25,6 +38,9 @@ const revealImage = (event) => {
 };
 
 const wrapWithDiv = (element) => {
+    if (!showRevealButton) {
+        return;
+    }
     if (element.classList.contains('wrapped')) {
         return;
     }
