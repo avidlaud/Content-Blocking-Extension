@@ -1,8 +1,9 @@
-function save_options() {
-    // creating a list of models
-
+function saveOptions() {
+    // Set the target object
+    const modelSelect = document.querySelector('#selectAvailableModel');
+    const selectedModel = modelSelect.value;
     chrome.storage.sync.set({
-
+        targetObject: selectedModel,
     }, () => {
         // Update status to let user know options were saved.
         const revealImage = document.querySelector('#revealImage');
@@ -11,6 +12,7 @@ function save_options() {
         } else {
 
         }
+        console.log(selectedModel);
 
         const status = document.getElementById('status');
         status.textContent = 'Options saved.';
@@ -35,7 +37,7 @@ function restore_options() {
 document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener(
     'click',
-    save_options,
+    saveOptions,
 );
 
 const buttonToggleMode = document.getElementById('buttonToggleMode');
@@ -80,20 +82,19 @@ inpFile.addEventListener('change', function () {
         previewImage.setAttribute('src', '');
     }
 });
-const models = [
-    'Blue',
-    'Red',
-    'White',
-    'Green',
-    'Black',
-    'Orange',
-];
-const select = document.createElement('select');
-document.getElementById('modelList').appendChild(select);
 
-models.forEach((models) => {
-    const option = document.createElement('option');
-    select.appendChild(option);
+const capitalizeFirstLetter = (word) => word.charAt(0).toUpperCase() + word.slice(1);
 
-    option.innerHTML += models;
-});
+const populateModelList = (availableModels) => {
+    const select = document.querySelector('#selectAvailableModel');
+    availableModels.forEach((model) => {
+        const option = document.createElement('option');
+        select.appendChild(option);
+        option.textContent = capitalizeFirstLetter(model);
+        option.value = model;
+    });
+};
+
+fetch('http://ec2-3-80-69-220.compute-1.amazonaws.com:10000/download/listmodels')
+    .then((res) => res.json())
+    .then(populateModelList);

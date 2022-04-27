@@ -4,6 +4,8 @@ import modelStorage from './modelStorage';
 // Integrate with config
 const CLASSIFICATION_THRESHOLD = 0.85;
 
+let targetModel = '';
+
 class ImageClassifier {
     constructor() {
         this.loadModel();
@@ -11,7 +13,14 @@ class ImageClassifier {
 
     async loadModel() {
         // Get from config
-        const modelPromise = modelStorage.get('dogs');
+        if (targetModel.length === 0) {
+            console.log('Waiting for target object to be selected!');
+            setTimeout(() => {
+                this.loadModel();
+            }, 1000);
+            return;
+        }
+        const modelPromise = modelStorage.get(targetModel);
         this.model = await modelPromise;
         console.log('Model loaded');
     }
@@ -72,3 +81,20 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
 
 // Needs this or else the other listener won't work properly
 chrome.runtime.onMessage.addListener(() => true);
+
+// Get the target model
+chrome.storage.sync.get('targetObject', (storage) => {
+    console.log(`Selected model: ${storage.targetObject}`);
+    targetModel = storage.targetObject;
+});
+
+chrome.storage.onChanged.addListener((changes) => {
+    if (changes.targetObject) {
+        chrome.storage.sync.get('targetObject', (storage) => {
+            console.log(`Changing model to: ${storage.targetObject}`);
+            targetModel = storage.targetObject;
+            // Reload the model
+            imageClassifier.loadModel();
+        });
+    }
+});
