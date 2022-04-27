@@ -1,40 +1,50 @@
 <!DOCTYPE html>
 <html>
-<head><title>My Test Extension Options</title></head>
+<head><title>My Test Extension Options</title>
+  <link rel="stylesheet" href="options.css">
+</head>
 <body>
+<h1>
+General
+</h1>
+<h2>
+List of current models:
+</h2>
+<div class = "modelList" id = "modelList">
 
-    
-<h1>Settings</h1>
-<h3>General</h3>
-What do you want blocked?
-<select id="object">
- <option value="banana">banana</option>
- <option value="owl">owl</option>
- <option value="tiger">tiger</option>
- <option value="brick">brick</option>
-</select>
+</div>
+
+<br>
+
+<label>
+<br>
+<input type="checkbox" id="contentbadge">
+Show amount of content blocked 
+</label>
+<br>
 <br>
 <label>
-  <input type="checkbox" id="amount">
-  Show amount of blocked content
-  <br>
-  <input type="checkbox" id="checkbox2">
-    Another option
-    <br>
-    <input type="checkbox" id="checkbox3">
-    Another option
-    <br>
-    <input type="checkbox" id="checkbox4">
-    Another option
-    <br>
-    <input type="checkbox" id="checkbox5">
-    Another option
-    <br>
-    <input type="checkbox" id="checkbox6">
-    Another option
-    <br>
-  
+<input type="checkbox" id="revealImage">
+Enable "Reveal Image" button 
 </label>
+
+<div class = "change-image" name = "changeImage" id = "changeImage">
+<p>Choose image to be displayed(.png)</p>
+<input type="file" name = "inpFile" id="inpFile">
+<div class="image-preview" id="imagePreview">
+    <img src="blank.png" alt="Image Preview" class="image-preview__image">
+    <span class= "image-preview__default-text">Image Preview</span>
+</div>
+</div>
+
+</label>
+<br>
+<body>
+  Strict or Relaxed blocking?<button id="buttonToggleMode">Toggle Mode</button>
+</body>
+<div id = "models">
+<u1 id = listModels></u1>
+</div>
 
 
 
@@ -44,3 +54,14 @@ What do you want blocked?
 <!--<script src="options.js"></script> -->
 </body>
 </html>
+
+
+
+<!--
+<select id="color">
+ <option value="red">red</option>
+ <option value="green">green</option>
+ <option value="blue">blue</option>
+ <option value="yellow">yellow</option>
+</select>
+-->
