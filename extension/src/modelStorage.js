@@ -19,6 +19,10 @@ const modelStorage = (() => {
                     resolve(model);
                     return;
                 }
+                // const deleteReq = db
+                //     .transaction(['models_store'], 'readwrite')
+                //     .objectStore('models_store')
+                //     .delete(modelName);
                 // Get the model
                 // TODO: Add some code to pull from our server
                 console.log('Model not found in IDB, pulling from server...');
@@ -41,9 +45,9 @@ const modelStorage = (() => {
     });
 
     const getModel = (modelName) => new Promise((resolve, reject) => {
-        if (model) {
-            resolve(model);
-        }
+        // if (model) {
+        //     resolve(model);
+        // }
         const dbRequest = indexedDB.open('tensorflowjs', 1);
         dbRequest.onupgradeneeded = (event) => {
             console.log('Upgraded IDB!');
