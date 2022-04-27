@@ -2,18 +2,16 @@ function saveOptions() {
     // Set the target object
     const modelSelect = document.querySelector('#selectAvailableModel');
     const selectedModel = modelSelect.value;
+
+    // Get the reveal image option
+    const revealImage = document.querySelector('#revealImage');
+    const showButton = revealImage.checked;
+
     chrome.storage.sync.set({
         targetObject: selectedModel,
+        revealButton: showButton,
     }, () => {
         // Update status to let user know options were saved.
-        const revealImage = document.querySelector('#revealImage');
-        if (revealImage.checked) {
-
-        } else {
-
-        }
-        console.log(selectedModel);
-
         const status = document.getElementById('status');
         status.textContent = 'Options saved.';
         setTimeout(() => {
@@ -22,19 +20,6 @@ function saveOptions() {
     });
 }
 
-// Restores select box and checkbox state using the preferences
-// stored in chrome.storage.
-function restore_options() {
-    // Use default value color = 'red' and likesColor = true.
-    chrome.storage.sync.get({
-        // favoriteColor: 'red',
-        // likesColor: true
-    }, (items) => {
-        // document.getElementById('color').value = items.favoriteColor;
-        // document.getElementById('like').checked = items.likesColor;
-    });
-}
-document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener(
     'click',
     saveOptions,
@@ -54,6 +39,11 @@ const toggleMode = () => {
         buttonToggleMode.innerText = !storage.strictModeOn ? 'Strict Mode' : 'Relaxed Mode';
     });
 };
+
+chrome.storage.sync.get('revealButton', (storage) => {
+    const revealImage = document.querySelector('#revealImage');
+    revealImage.checked = storage.revealButton;
+});
 
 buttonToggleMode.addEventListener('click', () => {
     toggleMode();
@@ -92,6 +82,11 @@ const populateModelList = (availableModels) => {
         select.appendChild(option);
         option.textContent = capitalizeFirstLetter(model);
         option.value = model;
+    });
+    chrome.storage.sync.get('targetObject', (storage) => {
+        if (storage.targetObject && storage.targetObject.length > 0) {
+            select.value = storage.targetObject;
+        }
     });
 };
 
