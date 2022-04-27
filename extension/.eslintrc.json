@@ -14,7 +14,7 @@
     "rules": {
         "indent": ["error", 4],
         "no-console": "off",
-        "max-len": ["warning", { "code": 120 }]
+        "max-len": ["warn", { "code": 120 }]
     },
     "plugins": [
         "html"
