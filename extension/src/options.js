@@ -67,19 +67,14 @@ inpFile.addEventListener('change', function () {
     // console.log(file);
     if (file) {
         const reader = new FileReader();
-        console.log('aaaa');
         previewDefaultText.style.display = 'none';
-        console.log('bbbb');
         previewImage.style.display = 'block';
-        console.log('GONNA ERROR');
         reader.addEventListener('load', function () {
-            console.log('HELLLLLLLO');
             previewImage.setAttribute('src', this.result);
         });
 
         reader.readAsDataURL(file);
     } else {
-        console.log(file);
         previewDefaultText.style.display = 'null';
         previewImage.style.display = 'null';
         previewImage.setAttribute('src', '');
