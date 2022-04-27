@@ -4,41 +4,43 @@
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
-<h1>
-General
-</h1>
-<h2>
-List of current models:
-</h2>
-<div class = "modelList" id = "modelList">
+  <h1>
+  General
+  </h1>
+  <h2>
+    List of current models:
+  </h2>
+  <div class = "modelList" id = "modelList">
+    <select id="selectAvailableModel">
 
-</div>
+    </select>
+  </div>
 
-<br>
+  <br>
 
-<label>
-<br>
-<input type="checkbox" id="contentbadge">
-Show amount of content blocked
-</label>
-<br>
-<br>
-<label>
-<input type="checkbox" id="revealImage">
-Enable "Reveal Image" button
-</label>
+  <label>
+    <br>
+    <input type="checkbox" id="contentbadge">
+      Show amount of content blocked
+    </label>
+    <br>
+  <br>
+  <label>
+  <input type="checkbox" id="revealImage">
+  Enable "Reveal Image" button
+  </label>
 
-<div class = "change-image" name = "changeImage" id = "changeImage">
-<p>Choose image to be displayed(.png)</p>
-<input type="file" name = "inpFile" id="inpFile">
-<div class="image-preview" id="imagePreview">
-    <img src="blank.png" alt="Image Preview" class="image-preview__image">
-    <span class= "image-preview__default-text">Image Preview</span>
-</div>
-</div>
+  <div class = "change-image" name = "changeImage" id = "changeImage">
+  <p>Choose image to be displayed(.png)</p>
+  <input type="file" name = "inpFile" id="inpFile">
+  <div class="image-preview" id="imagePreview">
+      <img src="blank.png" alt="Image Preview" class="image-preview__image">
+      <span class= "image-preview__default-text">Image Preview</span>
+  </div>
+  </div>
 
-</label>
-<br>
+  </label>
+  <br>
 <body>
   Strict or Relaxed blocking?<button id="buttonToggleMode">Toggle Mode</button>
 </body>
@@ -51,6 +53,6 @@ Enable "Reveal Image" button
 <div id="status"></div>
 <button id="save">Save</button>
 
-<!--<script src="options.js"></script> -->
+<script src="options.js"></script>
 </body>
 </html>
